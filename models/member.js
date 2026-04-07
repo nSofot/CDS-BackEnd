@@ -9,12 +9,6 @@ const memberSchema = new mongoose.Schema(
       trim: true,
     },
 
-    memberType: {
-      type: String,
-      default: "guest",
-      enum: ["guest", "ordinary", "life", "associate", "honorary", "overseas"],
-    },
-
     title: {
       type: String,
       enum: ["Mr.", "Mrs.", "Miss.", "Dr.", "Prof."],
@@ -30,6 +24,11 @@ const memberSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+    },
+
+    nameInSinhala: { 
+      type: String, 
+      trim: true 
     },
 
     address: [{ type: String, trim: true }],
@@ -61,7 +60,7 @@ const memberSchema = new mongoose.Schema(
     memberRole: {
       type: String,
       enum: [
-        "guest",
+        "admin",
         "member",
         "president",
         "secretary",
@@ -69,24 +68,14 @@ const memberSchema = new mongoose.Schema(
         "vice-president",
         "assistant-secretary",
         "assistant-treasurer",
-        "activity-coordinator",
-        "committee-member",
         "internal-auditor",
       ],
-      default: "guest",
+      default: "member",
     },
 
-    invitedBy: {
-      type: String,
-      trim: true,
-    },
-
-    periodInSchoolFrom: {
+    dueAmount: {
       type: Number,
-    },
-
-    periodInSchoolTo: {
-      type: Number,
+      default: 0,
     },
 
     password: {
@@ -106,10 +95,6 @@ const memberSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-// Indexes
-// memberSchema.index({ memberId: 1 });
-// memberSchema.index({ email: 1 });
 
 const Member = mongoose.model("Member", memberSchema);
 export default Member;
