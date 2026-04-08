@@ -1,14 +1,14 @@
-import Stock from "../models/stock";
+import Stock from "../models/stock.js";
 
 export const createStock = async (req, res) => {
   try {
-    const { stockId, stockName, stockDescription, stockQuantity, stockMSU, stockCost, stockPrice } = req.body;
+    const { stockId, stockName, stockDescription, stockQuantity, stockUOM, stockCost, stockPrice } = req.body;
 
-    if (!stockId || !stockName || !stockDescription || !stockQuantity || !stockMSU || !stockCost || !stockPrice) {
+    if (!stockId || !stockName || !stockDescription || !stockQuantity || !stockUOM || !stockCost || !stockPrice) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const stock = new Stock({ stockId, stockName, stockDescription, stockQuantity, stockMSU, stockCost, stockPrice });
+    const stock = new Stock({ stockId, stockName, stockDescription, stockQuantity, stockUOM, stockCost, stockPrice });
     const savedStock = await stock.save();
     res.status(201).json({ message: "Stock saved successfully", data: savedStock });
   } catch (err) {
@@ -38,15 +38,21 @@ export const getStockById = async (req, res) => {
   }
 };
 
+
 export const updateStock = async (req, res) => {
-  const { id } = req.params;
   try {
-    const updatedStock = await Stock.findByIdAndUpdate(id, req.body, { new: true });
-    if (!updatedStock) {
+    const updated = await Stock.findOneAndUpdate(
+      { stockId: req.params.stockId },
+      req.body,
+      { new: true }
+    );
+
+    if (!updated) {
       return res.status(404).json({ message: "Stock not found" });
     }
-    res.json({ message: "Stock updated successfully", data: updatedStock });
+
+    res.json(updated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Update failed" });
   }
 };

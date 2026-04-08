@@ -1,48 +1,49 @@
 import mongoose from "mongoose";
 
-const stockSchema = new mongoose.Schema(
+const vendorSchema = new mongoose.Schema(
   {
-    stockId: {
+    vendorId: {
       type: String,
       required: true,
       unique: true,
       trim: true,
     },
 
-    stockName: {
+    vendorName: {
         type: String,
         required: true,
         trim: true,
     },
 
-    stockDescription: {
+    vendorAddress: {
         type: String,   
         trim: true,
     },
-
-    stockQuantity: {
-        type: Number,
-        required: true,
-    },
-
-    stockUOM: {
+    vendorContact: {
         type: String,
         required: true,
+    },
+    vendorEmail: {
+        type: String,
+        required: true,
+    },
+    vendorPhone: {
+        type: String,
+        required: true,
+    },
+    vendorDueAmount: {
+        type: Number,
+        required: true,
+    },
+    vendorNote: {
+        type: String,
         trim: true,
-        enum: ["kg", "g", "L", "ml", "pcs"],
-    },
-
-    stockCost: {
-        type: Number,
-        required: true,
-    },
-
-    stockPrice: {
-        type: Number,
-        required: true,
     },
   },
+  {
+    timestamps: true,
+  }
 );
 
-const Stock = mongoose.model("Stock", stockSchema);
-export default Stock;
+const Vendor = mongoose.model("Vendor", vendorSchema);
+export default Vendor;
