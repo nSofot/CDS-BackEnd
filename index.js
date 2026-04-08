@@ -8,6 +8,9 @@ import { fileURLToPath } from "url";
 
 // Route Imports
 import memberRouter from "./Routes/memberRouter.js";
+import stockRouter from "./Routes/stockRoutes.js";
+import vendorRouter from "./Routes/vendorRoutes.js";
+
 import userRouter from "./Routes/userRouter.js";
 import bookReferencesRouter from "./Routes/bookReferencesRoutes.js";
 import ledgerTransactionsRouter from "./Routes/ledgerTransactionsRoutes.js";
@@ -55,6 +58,8 @@ mongoose.connect(process.env.MONGODB_URL)
 
 // 4️⃣ Routes
 app.use("/api/member", memberRouter);
+app.use("/api/stock", stockRouter);
+app.use("/api/vendor", vendorRouter);
 app.use("/api/user", userRouter);
 app.use("/api/book-reference", bookReferencesRouter);
 app.use("/api/ledger-transaction", ledgerTransactionsRouter);
