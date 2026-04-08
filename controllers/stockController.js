@@ -56,3 +56,18 @@ export const updateStock = async (req, res) => {
     res.status(500).json({ message: "Update failed" });
   }
 };
+
+export const deleteStock = async (req, res) => {
+  try {
+    const deleted = await Stock.findByIdAndDelete(req.params.stockId);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Stock not found" });
+    }
+
+    res.json({ message: "Stock deleted successfully" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ message: "Delete failed" });
+  }
+};
