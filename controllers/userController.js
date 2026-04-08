@@ -93,62 +93,6 @@ export async function loginUsers(req, res) {
 }
 
 
-// ======================== GOOGLE LOGIN ========================
-// export async function loginWithGoogle(req, res) {
-//   const { accessToken } = req.body;
-//   if (!accessToken) {
-//     return res.status(400).json({ message: "Access token is required" });
-//   }
-
-//   try {
-//     const response = await axios.get(
-//       "https://www.googleapis.com/oauth2/v3/userinfo",
-//       { headers: { Authorization: `Bearer ${accessToken}` } }
-//     );
-
-//     const email = response.data.email?.toLowerCase().trim();
-//     if (!email) {
-//       return res.status(400).json({ message: "Invalid Google user info" });
-//     }
-
-//     const member = await Member.findOne({
-//       email,
-//       isDeleted: { $ne: true }
-//     });
-
-//     if (!member) {
-//       return res.status(404).json({ message: "User not found in the database" });
-//     }
-
-//     const token = jwt.sign(
-//       {
-//         memberId: member.memberId,
-//         mobile: member.mobile,
-//         email: member.email,
-//         firstName: member.firstName,
-//         lastName: member.lastName,
-//         memberRole: member.memberRole,
-//       },
-//       process.env.JWT_KEY,
-//       { expiresIn: "1d" }
-//     );
-
-//     res.json({
-//       message: "Login successful",
-//       token,
-//       memberId: member.memberId,
-//       mobile: member.mobile,
-//       email: member.email,
-//       firstName: member.firstName,
-//       lastName: member.lastName,
-//       memberRole: member.memberRole,
-//     });
-
-//   } catch (err) {
-//     console.error("Google login failed:", err);
-//     res.status(500).json({ message: "Google login failed" });
-//   }
-// }
 export async function loginWithGoogle(req, res) {
   const { accessToken } = req.body;
 
@@ -281,16 +225,10 @@ export async function sendOTP(req, res) {
       expiresAt,
     });
 
-    // await transport.sendMail({
-    //   from: `"TCC Colombo Group" <${process.env.EMAIL_USER}>`,
-    //   to: email,
-    //   subject: "Reset User Password - TCC Colombo Group",
-    //   text: `Your OTP is ${randomOTP}. It expires in 10 minutes.`,
-    // });
     await transport.sendMail({
-      from: `"TCC Colombo Group" <${process.env.EMAIL_USER}>`,
+      from: `"Collective Development Society" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Reset Your Password – TCC Colombo Group",
+      subject: "Reset Your Password – Collective Development Society",
       text: `Your OTP is ${randomOTP}. It expires in 10 minutes.`,
       html: `
         <div style="font-family: Arial, sans-serif; background:#f5f6fa; padding:24px;">
@@ -302,7 +240,7 @@ export async function sendOTP(req, res) {
 
             <p style="color:#333; font-size:14px;">
               We received a request to reset your password for your
-              <strong>TCC Colombo Group</strong> account.
+              <strong>Collective Development Society</strong> account.
             </p>
 
             <p style="color:#333; font-size:14px;">
@@ -334,7 +272,7 @@ export async function sendOTP(req, res) {
             <hr style="border:none; border-top:1px solid #eee; margin:20px 0;" />
 
             <p style="font-size:12px; color:#999; text-align:center;">
-              © 2025 TCC Colombo Group<br/>
+              © 2026 Collective Development Society<br/>
               Powered by nSoft Technologies
             </p>
           </div>
@@ -352,7 +290,6 @@ export async function sendOTP(req, res) {
     });
   }
 }
-
 
 
 // ======================== RESET PASSWORD ========================
