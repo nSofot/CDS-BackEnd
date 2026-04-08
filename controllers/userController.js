@@ -292,7 +292,6 @@ export async function sendOTP(req, res) {
 }
 
 
-
 // ======================== RESET PASSWORD ========================
 export async function resetPassword(req, res) {
   try {
