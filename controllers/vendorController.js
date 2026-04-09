@@ -67,3 +67,43 @@ export const deleteVendor = async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 };
+
+export async function addVendorDueAmount(req, res) {
+  const { id } = req.params;
+  const { amount } = req.body;  
+
+  try {
+    const vendor = await Vendor.findById(id);
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    vendor.vendorDueAmount += amount;
+    await vendor.save();
+    res.json({ message: "Vendor due amount updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error updating vendor due amount", error: err.message });  
+  }
+}
+
+export async function reduceVendorDueAmount(req, res) {
+  const { id } = req.params;
+  const { amount } = req.body;
+
+  try {
+    const vendor = await Vendor.findById(id);
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    if (vendor.vendorDueAmount < amount) {
+      return res.status(400).json({ message: "Amount exceeds current due amount" });
+    }
+
+    vendor.vendorDueAmount -= amount;
+    await vendor.save();
+    res.json({ message: "Vendor due amount updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error updating vendor due amount", error: err.message });
+  }
+}
