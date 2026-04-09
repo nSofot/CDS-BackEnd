@@ -155,3 +155,35 @@ export async function searchMembers(req, res) {
     res.status(500).json({ message: "Error searching members", error: err.message });
   }
 }
+
+export async function addDueAmount(req, res) {
+  const memberId = req.params.memberId;
+  const { amount } = req.body;
+
+  try {
+    const member = await Member.findOne({ memberId });
+    if (!member) return res.status(404).json({ message: "Member not found" });
+
+    member.dueAmount += amount;
+    await member.save();
+    res.json({ message: "Amount added successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error adding amount", error: err.message });
+  }
+}
+
+export async function subtractDueAmount(req, res) {
+  const memberId = req.params.memberId;
+  const { amount } = req.body;
+
+  try {
+    const member = await Member.findOne({ memberId });
+    if (!member) return res.status(404).json({ message: "Member not found" });
+
+    member.dueAmount -= amount;
+    await member.save();
+    res.json({ message: "Amount subtracted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error subtracting amount", error: err.message });
+  }
+}

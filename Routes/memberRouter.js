@@ -5,7 +5,9 @@ import {
   getMemberById,
   deleteMember,
   updateMember,
-  searchMembers
+  searchMembers,
+  addDueAmount,
+  subtractDueAmount
 } from "../controllers/memberController.js";
 
 const memberRouter = express.Router();
@@ -29,5 +31,11 @@ memberRouter.put("/:memberId", updateMember);
 
 // Soft delete a member by memberId
 memberRouter.delete("/:memberId", deleteMember);
+
+// Add due amount to a member
+memberRouter.post("/:memberId/due/add", addDueAmount);
+
+// Subtract due amount from a member
+memberRouter.post("/:memberId/due/subtract", subtractDueAmount);
 
 export default memberRouter;
