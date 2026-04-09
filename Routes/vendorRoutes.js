@@ -5,7 +5,9 @@ import {
   getAllVendors,
   getVendorById,
   updateVendor,
-  deleteVendor
+  deleteVendor,
+    addVendorDueAmount,
+    reduceVendorDueAmount
 } from "../controllers/vendorController.js";
 
 const vendorRouter = express.Router();
@@ -15,5 +17,7 @@ vendorRouter.get("/", getAllVendors);
 vendorRouter.get("/:vendorId", getVendorById);
 vendorRouter.put("/:id", updateVendor);
 vendorRouter.delete("/:id", deleteVendor);
+vendorRouter.post("/:vendorId/add-due", addVendorDueAmount);
+vendorRouter.post("/:vendorId/reduce-due", reduceVendorDueAmount);
 
 export default vendorRouter;

@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import memberRouter from "./Routes/memberRouter.js";
 import stockRouter from "./Routes/stockRoutes.js";
 import vendorRouter from "./Routes/vendorRoutes.js";
+import stockTransactionsRouter from "./Routes/stockTransactionsRoutes.js";
 
 import userRouter from "./Routes/userRouter.js";
 import bookReferencesRouter from "./Routes/bookReferencesRoutes.js";
@@ -60,6 +61,7 @@ mongoose.connect(process.env.MONGODB_URL)
 app.use("/api/member", memberRouter);
 app.use("/api/stock", stockRouter);
 app.use("/api/vendor", vendorRouter);
+app.use("/api/stock-transaction", stockTransactionsRouter);
 app.use("/api/user", userRouter);
 app.use("/api/book-reference", bookReferencesRouter);
 app.use("/api/ledger-transaction", ledgerTransactionsRouter);
