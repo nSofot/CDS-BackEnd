@@ -2,6 +2,13 @@ import mongoose from "mongoose";
 
 const stockTransactionSchema = new mongoose.Schema(
   {
+    trxId: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    
     referenceId: {
       type: String,
       required: true,
@@ -17,7 +24,7 @@ const stockTransactionSchema = new mongoose.Schema(
         type: String,
         required: true,
         trim: true,
-        enum: ["grn"],
+        enum: ["Purchase", "Sale", "Return", "Good Issue" ],
     },
 
     clientId: {
