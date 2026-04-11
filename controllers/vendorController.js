@@ -69,20 +69,30 @@ export const deleteVendor = async (req, res) => {
 };
 
 export async function addVendorDueAmount(req, res) {
-  const { id } = req.params;
-  const { amount } = req.body;  
+  const { vendorId } = req.params;
+  const { amount } = req.body;
 
   try {
-    const vendor = await Vendor.findById(id);
+    const vendor = await Vendor.findOne({ vendorId });
+
     if (!vendor) {
       return res.status(404).json({ message: "Vendor not found" });
     }
 
+    if (typeof amount !== "number") {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
     vendor.vendorDueAmount += amount;
+
     await vendor.save();
+
     res.json({ message: "Vendor due amount updated successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error updating vendor due amount", error: err.message });  
+    res.status(500).json({
+      message: "Error updating vendor due amount",
+      error: err.message,
+    });
   }
 }
 

@@ -12,7 +12,14 @@ export const createStockTransaction = async (req, res) => {
       items,
     } = req.body;
 
+    const prefixMap = {
+      Purchase: "GRN-",
+      Return: "RTN-"
+    };
+    const trxId = `${prefixMap[trxType] || "TRX"}${Date.now()}`;
+    
     const stockTransaction = new StockTransactions({
+      trxId,
       referenceId,
       trxDate,
       trxType,
