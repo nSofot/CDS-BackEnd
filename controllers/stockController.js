@@ -4,7 +4,7 @@ export const createStock = async (req, res) => {
   try {
     const { stockId, stockName, stockDescription, stockQuantity, stockUOM, stockCost, stockPrice } = req.body;
 
-    if (!stockId || !stockName || !stockDescription || !stockQuantity || !stockUOM || !stockCost || !stockPrice) {
+    if (!stockId || !stockName || !stockDescription || !stockUOM) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
