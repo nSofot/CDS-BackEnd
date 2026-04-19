@@ -97,23 +97,32 @@ export async function addVendorDueAmount(req, res) {
 }
 
 export async function reduceVendorDueAmount(req, res) {
-  const { id } = req.params;
+  const { vendorId } = req.params;
   const { amount } = req.body;
 
   try {
-    const vendor = await Vendor.findById(id);
+    const vendor = await Vendor.findOne({ vendorId }); // ✅ FIXED
+
     if (!vendor) {
       return res.status(404).json({ message: "Vendor not found" });
     }
 
     if (vendor.vendorDueAmount < amount) {
-      return res.status(400).json({ message: "Amount exceeds current due amount" });
+      return res.status(400).json({
+        message: "Amount exceeds current due amount",
+      });
     }
 
     vendor.vendorDueAmount -= amount;
     await vendor.save();
-    res.json({ message: "Vendor due amount updated successfully" });
+
+    res.json({
+      message: "Vendor due amount updated successfully",
+    });
   } catch (err) {
-    res.status(500).json({ message: "Error updating vendor due amount", error: err.message });
+    res.status(500).json({
+      message: "Error updating vendor due amount",
+      error: err.message,
+    });
   }
 }
