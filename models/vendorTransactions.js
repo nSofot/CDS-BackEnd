@@ -13,10 +13,10 @@ const vendorTransactionSchema = new mongoose.Schema(
         required: true,
     },
 
-    TrxType: {
+    trxType: {
         type: String,
         required: true,
-        enum: ["Purchase", "Payment", "Return"],
+        enum: ["Purchase", "Invoice", "Payment", "Return"],
     },
 
     vendorId: {
@@ -29,7 +29,7 @@ const vendorTransactionSchema = new mongoose.Schema(
         required: true,
     },
 
-        description: {
+    description: {
         type: String,
         trim: true,
     },
