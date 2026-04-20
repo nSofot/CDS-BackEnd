@@ -1,4 +1,4 @@
-import memberTransactions from '../models/memberTransactions.js';
+import MemberTransactions from '../models/memberTransactions.js';
 
 export const createMemberTransaction = async (req, res) => {
   try {
@@ -29,9 +29,14 @@ export const createMemberTransaction = async (req, res) => {
 
 export const getMemberTransactions = async (req, res) => {
   try {
-    const memberTransactions = await memberTransactions.find().sort({ trxDate: -1 });
-    res.json(memberTransactions);
+    const transactions = await MemberTransactions.find().sort({ trxDate: -1 });
+
+    res.json({
+      success: true,
+      data: transactions,
+    });
   } catch (err) {
+    console.error("❌ Fetch error:", err);
     res.status(500).json({ message: err.message });
   }
 };
