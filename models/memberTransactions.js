@@ -1,6 +1,13 @@
 import mongoose from "mongoose";
 
 const memberTransactionSchema = new mongoose.Schema({
+    trxId: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+    },
+
     referenceId: {
         type: String,
         required: true,
@@ -16,7 +23,7 @@ const memberTransactionSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        enum: ["Invoice", "Payment", "Return"],
+        enum: ["Invoice", "Receipt", "Return"],
     },
 
     memberId: {
@@ -28,6 +35,7 @@ const memberTransactionSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    
     description: {
         type: String,
         trim: true,

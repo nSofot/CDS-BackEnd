@@ -160,43 +160,58 @@ export async function addLederAccountBalance(req, res) {
 }
 
 
-
 export async function subtractLedgerAccountBalance(req, res) {
-    // if (!isAdmin(req)) {
-    //     return res.status(403).json({ message: "Not authorized" });
-    // }
+  const { updates } = req.body;
 
-    const { updates } = req.body;
+  console.log("Subtracting balances:", updates);
 
-    if (!updates || !Array.isArray(updates)) {
-        return res.status(400).json({ message: "updates array is required" });
-    }
+  // ================= VALIDATION =================
+  if (!updates || !Array.isArray(updates)) {
+    return res.status(400).json({
+      message: "updates array is required",
+    });
+  }
 
-    try {
-        const updatePromises = updates.map(({ accountId, amount }) => {
-            if (!accountId || typeof amount !== 'number') {
-                throw new Error(`Invalid data for accountId: ${accountId}`);
-            }
+  try {
+    // ================= PROCESS UPDATES =================
+    const results = await Promise.all(
+      updates.map(async ({ accountId, amount }) => {
 
-            return LedgerAccounts.updateOne(
-                { accountId },
-                {
-                    $inc: { accountBalance: -Math.abs(amount) }, // subtracting as negative increment
-                    $set: { updatedAt: new Date() },
-                }
-            );
-        });
+        // Validate input
+        if (!accountId || typeof amount !== "number") {
+          throw new Error(`Invalid data for accountId: ${accountId}`);
+        }
 
-        await Promise.all(updatePromises);
+        // Find ledger account
+        const account = await LedgerAccounts.findOne({ accountId });
 
-        res.json({ message: "Account balances subtracted successfully" });
-    } catch (err) {
-        console.error("Balance subtraction failed:", err);
-        res.status(500).json({
-            message: "Failed to subtract account balance",
-            error: err.message || err,
-        });
-    }
+        if (!account) {
+          throw new Error(`Account not found: ${accountId}`);
+        }
+
+        // ================= UPDATE BALANCE =================
+        account.accountBalance =
+          (account.accountBalance || 0) - Math.abs(amount);
+
+        account.updatedAt = new Date();
+
+        // Save document (safe, triggers schema correctly)
+        return await account.save();
+      })
+    );
+
+    res.json({
+      message: "Account balances subtracted successfully",
+      data: results,
+    });
+
+  } catch (err) {
+    console.error("Balance subtraction failed:", err);
+
+    res.status(500).json({
+      message: err.message || "Failed to subtract account balance",
+    });
+  }
 }
 
  
