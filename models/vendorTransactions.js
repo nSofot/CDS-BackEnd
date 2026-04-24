@@ -2,6 +2,12 @@ import mongoose from "mongoose";
 
 const vendorTransactionSchema = new mongoose.Schema(
   {
+    trxId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    
     referenceId: {
       type: String,
       required: true,

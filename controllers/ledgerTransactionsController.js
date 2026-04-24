@@ -32,33 +32,6 @@ export async function getLedgerTransactionById(req, res) {
 
 export async function createLedgerTransaction(req, res) {             
     try {
-        let refTrx = "";
-
-        if (req.body.transactionType === "receipt") {
-            refTrx = "REC-";
-        } else if (req.body.transactionType === "voucher") {
-            refTrx = "VOU-";
-        } else if (req.body.transactionType === "transfer") {
-            refTrx = "TRF-";
-        } else {
-            return res.status(400).json({ message: "Invalid transaction type" });
-        }
-
-        let newRefNo = refTrx + "000001";
-
-        // Get last record sorted by trxId descending
-        const lastRecord = await LedgerTransactions.findOne().sort({ trxId: -1 });
-
-        if (lastRecord && lastRecord.trxId) {
-            // Extract number part after "REC-"
-            const lastNo = parseInt(lastRecord.trxId.replace(refTrx, ""), 10);
-
-            // Generate next ID
-            const nextNo = lastNo + 1;
-            newRefNo = `${refTrx}${String(nextNo).padStart(6, "0")}`;
-        }
-        req.body.trxId = newRefNo;
-   
         const { trxDate } = req.body;
         const trxDateObj = new Date(trxDate);
         if (isNaN(trxDateObj)) {
