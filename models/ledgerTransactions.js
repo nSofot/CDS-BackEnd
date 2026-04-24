@@ -3,17 +3,14 @@ import mongoose from "mongoose";
 const ledgerTransactionsSchema = new mongoose.Schema({
     trxId: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        trim: true
     },
-    memberId: {
+    referenceId: {
         type: String,
-    },
-    memberName: {
-        type: String,
-    },
-    trxBookNo: {
-        type: String,
-        unique: false
+        required: true,
+        trim: true
     },
     trxDate: {
         type: Date,
@@ -22,10 +19,7 @@ const ledgerTransactionsSchema = new mongoose.Schema({
     transactionType: {
         type: String,
         required: true,
-        enum: ['voucher', 'receipt', 'transfer'],
-    },
-    transactionCategory: {
-        type: String,
+        enum: ['Receipt', 'Payment', 'Transfer'],
     },
     accountId: {
         type: String,
