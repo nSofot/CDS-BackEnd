@@ -24,7 +24,7 @@ const stockTransactionSchema = new mongoose.Schema(
         type: String,
         required: true,
         trim: true,
-        enum: ["Purchase", "Sale", "Return", "Good Issue" ],
+        enum: ["Purchase", "Sale", "Return", "GoodIssue", "Substrate", "Sterilized", "Inoculated", "Incubating", "Fruiting", "Completed", "Rejected", "Sold"],
     },
 
     clientId: {

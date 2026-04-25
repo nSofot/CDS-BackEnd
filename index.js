@@ -19,6 +19,8 @@ import bookReferencesRouter from "./Routes/bookReferencesRoutes.js";
 import ledgerTransactionsRouter from "./Routes/ledgerTransactionsRoutes.js";
 import ledgerAccountRouter from "./Routes/ledgerAccountRoutes.js";
 
+import batchRouter from "./Routes/batchRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -70,6 +72,7 @@ app.use("/api/user", userRouter);
 app.use("/api/book-reference", bookReferencesRouter);
 app.use("/api/ledger-transaction", ledgerTransactionsRouter);
 app.use("/api/ledger-account", ledgerAccountRouter);
+app.use("/api/batch", batchRouter);
 
 // 5️⃣ Health Check
 app.get("/", (req, res) => {

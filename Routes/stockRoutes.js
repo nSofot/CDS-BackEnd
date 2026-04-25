@@ -18,6 +18,6 @@ stockRouter.get("/:stockId", getStockById);
 stockRouter.put("/:stockId", updateStock);
 stockRouter.delete("/:stockId", deleteStock);
 stockRouter.post("/bulk-add", addBulkStock);
-stockRouter.post("/:stockId/reduce", reduceStockQuantity);
+stockRouter.post("/bulk-reduce", reduceStockQuantity);
 
 export default stockRouter;
