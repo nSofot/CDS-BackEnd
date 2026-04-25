@@ -14,12 +14,19 @@ export const createStockTransaction = async (req, res) => {
 
     const prefixMap = {
       Purchase: "GRN-",
+      GoodIssue: "GIN-",
       Return: "RTN-"
     };
-    // Generate a unique transaction ID using previous transaction type 000001,0000002, etc. with prefix based on transaction type
-    const lastTransaction = await StockTransactions.findOne({ trxType }).sort({ trxDate: -1 });
-    const lastTrxId = lastTransaction ? parseInt(lastTransaction.trxId.replace(prefixMap[trxType] || "TRX-", "")) : 0;
-    const trxId = `${prefixMap[trxType] || "TRX-"}${String(lastTrxId + 1).padStart(6, '0')}`;   
+
+    let trxId = "";
+    if (trxType === "Substrate") {
+      trxId = req.body.trxId;
+    } else {
+      // Generate a unique transaction ID using previous transaction type 000001,0000002, etc. with prefix based on transaction type
+      const lastTransaction = await StockTransactions.findOne({ trxType }).sort({ trxDate: -1 });
+      const lastTrxId = lastTransaction ? parseInt(lastTransaction.trxId.replace(prefixMap[trxType] || "TRX-", "")) : 0;
+      trxId = `${prefixMap[trxType] || "TRX-"}${String(lastTrxId + 1).padStart(6, '0')}`;   
+    }
 
     const stockTransaction = new StockTransactions({
       trxId,
