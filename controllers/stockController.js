@@ -76,52 +76,72 @@ export const addBulkStock = async (req, res) => {
   try {
     const { items } = req.body;
 
-    if (!items || items.length === 0) {
+    if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: "No items provided" });
     }
 
-    for (const item of items) {
-      await Stock.findOneAndUpdate(
-        { stockId: item.stockId },
-        {
+    const bulkOps = items.map((item) => ({
+      updateOne: {
+        filter: { stockId: item.stockId },
+        update: {
           $inc: {
-            stockQuantity: item.quantity, // increase stock
+            stockQuantity: Number(item.quantity || 0),
           },
-          $set: {
-            stockCost: item.stockCost,   // update latest cost
-            stockPrice: item.stockPrice, // update selling price
-          },
+          // $set: {
+          //   stockCost: Number(item.stockCost || 0),
+          //   stockPrice: Number(item.stockPrice || 0),
+          // },
         },
-        { new: true }
-      );
-    }
+        upsert: false, // change to true if you want auto-create
+      },
+    }));
 
-    res.status(200).json({ message: "Stock updated successfully" });
+    const result = await Stock.bulkWrite(bulkOps);
+
+    return res.status(200).json({
+      message: "Bulk stock updated successfully",
+      result,
+    });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message });
+    console.error("BULK STOCK ERROR:", err);
+    return res.status(500).json({
+      message: err.message,
+    });
   }
 };
 
 export async function reduceStockQuantity(req, res) {
-  const { stockId } = req.params;
-  const { quantity } = req.body;
-
   try {
-    const stock = await Stock.findOne({ stockId });
-    if (!stock) {
-      return res.status(404).json({ message: "Stock not found" });
+    const { items } = req.body;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "No items provided" });
     }
 
-    if (stock.stockQuantity < quantity) {
-      return res.status(400).json({ message: "Insufficient stock quantity" });
-    }
+    const bulkOps = items.map((item) => ({
+      updateOne: {
+        filter: { stockId: item.stockId },
+        update: {
+          $inc: {
+            stockQuantity: -Math.abs(Number(item.quantity || 0)), // always reduce
+          },
+        },
+      },
+    }));
 
-    stock.stockQuantity -= quantity;
-    await stock.save();
-    res.json({ message: "Stock quantity updated successfully" });
+    const result = await Stock.bulkWrite(bulkOps);
+
+    return res.status(200).json({
+      message: "Stock quantities reduced successfully",
+      result,
+    });
+
   } catch (err) {
-    res.status(500).json({ message: "Error updating stock quantity", error: err.message }); 
-  } 
+    console.error("BULK REDUCE STOCK ERROR:", err);
+    return res.status(500).json({
+      message: "Error reducing stock quantities",
+      error: err.message,
+    });
+  }
 }
