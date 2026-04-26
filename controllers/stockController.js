@@ -2,17 +2,97 @@ import Stock from "../models/stock.js";
 
 export const createStock = async (req, res) => {
   try {
-    const { stockId, stockName, stockDescription, stockQuantity, stockUOM, stockCost, stockPrice } = req.body;
+    const {
+      stockCategory,
+      stockName,
+      stockDescription,
+      stockQuantity,
+      baseQuantity,
+      stockUOM,
+      stockCost,
+      stockPrice,
+    } = req.body;
 
-    if (!stockId || !stockName || !stockDescription || !stockUOM) {
-      return res.status(400).json({ message: "Missing required fields" });
+    // Validation
+    if (!stockCategory || !stockName || !stockUOM) {
+      return res.status(400).json({
+        message: "Missing required fields",
+      });
     }
 
-    const stock = new Stock({ stockId, stockName, stockDescription, stockQuantity, stockUOM, stockCost, stockPrice });
+    // Category-based prefix start values
+    let startFrom = 1;
+
+    if (stockCategory === "packing material") {
+      startFrom = 1; // 001
+    } else if (stockCategory === "substrate material") {
+      startFrom = 1000; // 100
+    } else if (stockCategory === "sterilizing material") {
+      startFrom = 2000; // 200
+    } else if (stockCategory === "inoculating material") {
+      startFrom = 3000; // 300
+    } else if (stockCategory === "incubating material") {
+      startFrom = 4000; // 400
+    } else if (stockCategory === "finished products") {
+      startFrom = 5000; // 500
+    } else {
+      return res.status(400).json({
+        message: "Invalid stock category",
+      });
+    }
+
+    // Find latest stock for this category range
+    let minRange = startFrom;
+    let maxRange = startFrom + 999;
+
+    if (startFrom === 1) {
+      minRange = 1;
+      maxRange = 999;
+    }
+
+    const allStocks = await Stock.find({});
+
+    const filteredStocks = allStocks.filter((item) => {
+      const numericId = Number(item.stockId);
+      return numericId >= minRange && numericId <= maxRange;
+    });
+
+    let newStockId = startFrom;
+
+    if (filteredStocks.length > 0) {
+      const maxId = Math.max(
+        ...filteredStocks.map((item) => Number(item.stockId))
+      );
+      newStockId = maxId + 1;
+    }
+
+    // Format as 3 digits
+    const formattedStockId = String(newStockId).padStart(4, "0");
+
+    // Create stock
+    const stock = new Stock({
+      stockId: formattedStockId,
+      stockCategory,
+      stockName,
+      stockDescription,
+      stockQuantity: Number(stockQuantity || 0),
+      baseQuantity: Number(baseQuantity || 0),
+      stockUOM,
+      stockCost: Number(stockCost || 0),
+      stockPrice: Number(stockPrice || 0),
+    });
+
     const savedStock = await stock.save();
-    res.status(201).json({ message: "Stock saved successfully", data: savedStock });
+
+    res.status(201).json({
+      message: "Stock saved successfully",
+      data: savedStock,
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({
+      message: err.message,
+    });
   }
 };
 
