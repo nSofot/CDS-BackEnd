@@ -116,11 +116,6 @@ const batchSchema = new mongoose.Schema(
       },
     ],
 
-    totalMaterialCount: {
-      type: Number,
-      default: 0,
-    },
-
     totalCostValue: {
       type: Number,
       default: 0,
