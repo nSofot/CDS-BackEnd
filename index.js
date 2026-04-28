@@ -20,6 +20,7 @@ import ledgerTransactionsRouter from "./Routes/ledgerTransactionsRoutes.js";
 import ledgerAccountRouter from "./Routes/ledgerAccountRoutes.js";
 
 import batchRouter from "./Routes/batchRoutes.js";
+import stockIssueDetailRouter from "./Routes/stockIssueDetailRoutes.js";
 
 dotenv.config();
 
@@ -73,6 +74,7 @@ app.use("/api/book-reference", bookReferencesRouter);
 app.use("/api/ledger-transaction", ledgerTransactionsRouter);
 app.use("/api/ledger-account", ledgerAccountRouter);
 app.use("/api/batch", batchRouter);
+app.use("/api/stock-issue-details", stockIssueDetailRouter);
 
 // 5️⃣ Health Check
 app.get("/", (req, res) => {
