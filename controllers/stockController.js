@@ -152,6 +152,7 @@ export const deleteStock = async (req, res) => {
   }
 };
 
+
 export const addBulkStock = async (req, res) => {
   try {
     const { items } = req.body;
@@ -160,21 +161,58 @@ export const addBulkStock = async (req, res) => {
       return res.status(400).json({ message: "No items provided" });
     }
 
-    const bulkOps = items.map((item) => ({
-      updateOne: {
-        filter: { stockId: item.stockId },
-        update: {
-          $inc: {
-            stockQuantity: Number(item.quantity || 0),
+    // Fetch current stock records
+    const stockIds = items.map((item) => item.stockId);
+
+    const existingStocks = await Stock.find({
+      stockId: { $in: stockIds },
+    });
+
+    const stockMap = {};
+    existingStocks.forEach((stock) => {
+      stockMap[stock.stockId] = stock;
+    });
+
+    const bulkOps = items
+      .map((item) => {
+        const existingStock = stockMap[item.stockId];
+
+        if (!existingStock) return null;
+
+        const currentQty = Number(existingStock.stockQuantity || 0);
+        const currentCost = Number(existingStock.stockCost || 0);
+        const currentPrice = Number(existingStock.stockPrice || 0);
+
+        const newQty = Number(item.quantity || 0);
+        const newCost = Number(item.stockCost || 0);
+        const newPrice = Number(item.stockPrice || 0);
+
+        // Weighted Average Cost Calculation
+        const averageCost =
+          currentQty + newQty > 0
+            ? (
+                (currentCost * currentQty + newCost * newQty) /
+                (currentQty + newQty)
+              ).toFixed(2)
+            : 0;
+
+        return {
+          updateOne: {
+            filter: { stockId: item.stockId },
+            update: {
+              $inc: {
+                stockQuantity: newQty,
+              },
+              $set: {
+                stockCost: Number(averageCost),
+                stockPrice: Number(newPrice),
+              },
+            },
+            upsert: false,
           },
-          // $set: {
-          //   stockCost: Number(item.stockCost || 0),
-          //   stockPrice: Number(item.stockPrice || 0),
-          // },
-        },
-        upsert: false, // change to true if you want auto-create
-      },
-    }));
+        };
+      })
+      .filter(Boolean);
 
     const result = await Stock.bulkWrite(bulkOps);
 
@@ -182,7 +220,6 @@ export const addBulkStock = async (req, res) => {
       message: "Bulk stock updated successfully",
       result,
     });
-
   } catch (err) {
     console.error("BULK STOCK ERROR:", err);
     return res.status(500).json({
@@ -190,6 +227,7 @@ export const addBulkStock = async (req, res) => {
     });
   }
 };
+
 
 export async function reduceStockQuantity(req, res) {
   try {

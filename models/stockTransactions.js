@@ -61,6 +61,11 @@ const stockTransactionSchema = new mongoose.Schema(
                 required: true,
             },
 
+            quantityBalance: {
+                type: Number,
+                default: 0,
+            },
+
             stockUOM: {
                 type: String,
                 trim: true,
