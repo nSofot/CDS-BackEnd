@@ -2,42 +2,32 @@ import batch from "../models/batch.js";
 
 export const createBatch = async (req, res) => {
   try {
-    // Start of today
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const today = req.body.trxDate || new Date();
 
-    // End of today
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
 
-    // Date part => YYYYMMDD
-    const today = new Date();
-    const datePart = today.toISOString().slice(0, 10).replace(/-/g, "");
+    const datePart = `${year}${month}${day}`;
 
-    // Find today's latest batch
+    // Find latest batch only for today's pattern
     const lastBatch = await batch
       .findOne({
-        createdAt: {
-          $gte: startOfDay,
-          $lte: endOfDay,
+        batchNo: {
+          $regex: `^SB-${datePart}-`,
         },
       })
       .sort({ createdAt: -1 });
 
     let sequence = 1;
 
-    if (lastBatch && lastBatch.batchNo) {
-      // Example: SB-20260424-005
+    if (lastBatch?.batchNo) {
       const parts = lastBatch.batchNo.split("-");
-      const lastSequence = parseInt(parts[2] || "0", 10);
+      const lastSequence = parseInt(parts[2], 10) || 0;
       sequence = lastSequence + 1;
     }
 
-    // Format => 001, 002, 003
-    const paddedSequence = String(sequence).padStart(3, "0");
-
-    // Final batch number
-    const batchNumber = `SB-${datePart}-${paddedSequence}`;
+    const batchNumber = `SB-${datePart}-${String(sequence).padStart(3, "0")}`;
 
     const newBatch = await batch.create({
       ...req.body,
@@ -49,6 +39,7 @@ export const createBatch = async (req, res) => {
       message: "Batch created successfully",
       data: newBatch,
     });
+
   } catch (error) {
     console.error("Create Batch Error:", error);
 

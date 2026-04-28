@@ -9,6 +9,20 @@ const stockSchema = new mongoose.Schema(
       trim: true,
     },
 
+    stockCategory: {
+        type: String,
+        required: true,
+        trim: true,
+        enum: [
+            "packing material",
+            "substrate material", 
+            "sterilizing material", 
+            "inoculating material",
+            "incubating material", 
+            "finished products"
+        ],
+    },
+
     stockName: {
         type: String,
         required: true,
@@ -40,6 +54,10 @@ const stockSchema = new mongoose.Schema(
     stockPrice: {
         type: Number,
         required: true,
+    },
+
+    baseQuantity: {
+        type: Number,
     },
   },
 );

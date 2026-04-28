@@ -35,6 +35,22 @@ const batchSchema = new mongoose.Schema(
         default: "DRAFT",
     },
 
+    sterilizationDate: {
+      type: Date,
+    },
+
+    inoculationDate: {
+      type: Date,
+    },
+
+    incubationDate: {
+      type: Date,
+    },
+
+    soldDate: {
+      type: Date,
+    },
+
     materials: [
       {
         stockId: {
@@ -99,11 +115,6 @@ const batchSchema = new mongoose.Schema(
         },
       },
     ],
-
-    totalMaterialCount: {
-      type: Number,
-      default: 0,
-    },
 
     totalCostValue: {
       type: Number,
