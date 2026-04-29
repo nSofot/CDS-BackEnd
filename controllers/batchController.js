@@ -1,4 +1,4 @@
-import batch from "../models/batch.js";
+import Batch from "../models/batch.js";
 
 export const createBatch = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ export const createBatch = async (req, res) => {
     const datePart = `${year}${month}${day}`;
 
     // Find latest batch only for today's pattern
-    const lastBatch = await batch
+    const lastBatch = await Batch
       .findOne({
         batchNo: {
           $regex: `^SB-${datePart}-`,
@@ -54,7 +54,7 @@ export const createBatch = async (req, res) => {
 
 export const getBatches = async (req, res) => {
     try {
-        const batches = await batch.find();
+        const batches = await Batch.find();
         res.status(200).json(batches);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -63,28 +63,42 @@ export const getBatches = async (req, res) => {
 
 
 export const updateBatch = async (req, res) => {
-    try {
-        const updatedBatch = await batch.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.status(200).json(updatedBatch);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const updatedBatch = await Batch.findByIdAndUpdate(
+      req.params.batchId,
+      req.body,
+      { new: true }
+    );
+
+    res.status(200).json(updatedBatch);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 export const deleteBatch = async (req, res) => {
-    try {
-        const deletedBatch = await batch.findByIdAndDelete(req.params.id);
-        res.status(200).json(deletedBatch);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const deletedBatch = await Batch.findByIdAndDelete(req.params.batchId);
+    res.status(200).json(deletedBatch);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-export const getBatchById = async (req, res) => {
-    try {
-        const batch = await batch.findById(req.params.id);
-        res.status(200).json(batch);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+
+export const getBatchByNo = async (req, res) => {
+  try {
+    const { batchNo } = req.params;
+
+    const batch = await Batch.findOne({ batchNo });
+
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found" });
     }
+
+    res.status(200).json(batch);
+  } catch (error) {
+    console.error("Batch fetch error:", error);
+    res.status(500).json({ message: error.message });
+  }
 };
