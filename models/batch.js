@@ -21,18 +21,18 @@ const batchSchema = new mongoose.Schema(
     },
 
     status: {
-        type: String,
-        enum: [
-            "Substrate",
-            "Sterilized",
-            "Inoculated",
-            "Incubating",
-            "Fruiting",
-            "Completed",
-            "Rejected",
-            "Sold",
-        ],
-        default: "DRAFT",
+      type: String,
+      enum: [
+        "Substrate",
+        "Sterilized",
+        "Inoculated",
+        "Incubating",
+        "Fruiting",
+        "Completed",
+        "Rejected",
+        "Sold",
+      ],
+      default: "Substrate",
     },
 
     sterilizationDate: {

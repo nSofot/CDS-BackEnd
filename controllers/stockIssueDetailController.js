@@ -32,10 +32,17 @@ export const getStockIssueDetailByIssueTrxId = async (req, res) => {
 
 
 export const getStockIssueDetailByIssueReferenceId = async (req, res) => {
-    try {
-        const stockIssueDetail = await StockIssueDetail.findOne({ issueReferenceId: req.params.issueReferenceId });
-        res.json(stockIssueDetail);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+  try {
+    const stockIssueDetail = await StockIssueDetail.findOne({
+      issueReferenceId: req.params.issueReferenceId
+    });
+
+    if (!stockIssueDetail) {
+      return res.status(404).json({ message: "Stock issue detail not found" });
     }
-}
+
+    res.json(stockIssueDetail);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
