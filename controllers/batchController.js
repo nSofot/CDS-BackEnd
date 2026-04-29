@@ -2,7 +2,7 @@ import Batch from "../models/batch.js";
 
 export const createBatch = async (req, res) => {
   try {
-    const today = req.body.trxDate || new Date();
+    const today = req.body.trxDate ? new Date(req.body.trxDate) : new Date();
 
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
@@ -29,7 +29,7 @@ export const createBatch = async (req, res) => {
 
     const batchNumber = `SB-${datePart}-${String(sequence).padStart(3, "0")}`;
 
-    const newBatch = await batch.create({
+    const newBatch = await Batch.create({
       ...req.body,
       batchNo: batchNumber,
     });
@@ -90,13 +90,13 @@ export const getBatchByNo = async (req, res) => {
   try {
     const { batchNo } = req.params;
 
-    const batch = await Batch.findOne({ batchNo });
+    const foundBatch = await Batch.findOne({ batchNo });
 
-    if (!batch) {
+    if (!foundBatch) {
       return res.status(404).json({ message: "Batch not found" });
     }
 
-    res.status(200).json(batch);
+    res.status(200).json(foundBatch);
   } catch (error) {
     console.error("Batch fetch error:", error);
     res.status(500).json({ message: error.message });
