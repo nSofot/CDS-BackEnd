@@ -7,15 +7,15 @@ import { isAdmin } from "./userController.js";
 export async function CreateMember(req, res) {
   let memberId = "";
   try {
-    if (req.body.memberType === "guest") {
-      const lastMember = await Member.find({ memberType: "guest" })
+    if (req.body.memberType === "Guest") {
+      const lastMember = await Member.find({ memberType: "Guest" })
         .sort({ memberId: -1 })
         .limit(1);
       memberId = lastMember.length
         ? "T" + String(parseInt(lastMember[0].memberId.replace(/\D/g, "")) + 1).padStart(3, "0")
         : "T001";
     } else {
-      const lastMember = await Member.find({ memberType: { $ne: "guest" } })
+      const lastMember = await Member.find({ memberType: { $ne: "Guest" } })
         .sort({ memberId: -1 })
         .limit(1);
       memberId = lastMember.length    
@@ -26,9 +26,9 @@ export async function CreateMember(req, res) {
     return res.status(500).json({ message: "Failed to generate memberId", error: err.message });
   }
 
-  const { firstName, lastName, mobile } = req.body;
+  const { firstName, lastName, mobile, memberType, memberRole } = req.body;
 
-  if (!firstName || !lastName || !mobile) {
+  if (!firstName || !lastName || !mobile || !memberType || !memberRole) {
     return res.status(400).json({
       message: "First name, last name, and mobile are required",
     });
