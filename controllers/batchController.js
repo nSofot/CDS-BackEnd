@@ -76,6 +76,50 @@ export const updateBatch = async (req, res) => {
   }
 };
 
+export const updateBulkBatch = async (req, res) => {
+  try {
+    const { batches } = req.body;
+
+    if (!Array.isArray(batches) || batches.length === 0) {
+      return res.status(400).json({ message: "No batches provided" });
+    }
+
+    const bulkOps = batches.map((batch) => ({
+      updateOne: {
+        filter: { batchNo: batch.batchNo },
+        update: {
+          $set: {
+            totalCostValue: batch.totalCostValue,
+            totalJobValue: batch.totalJobValue,
+            status: batch.status,
+            sterilizationDate: batch.sterilizationDate,
+          },
+          $push: {
+            materials: {
+              $each: batch.materials || [],
+            },
+            otherExpenses: {
+              $each: batch.otherExpenses || [],
+            },
+          },
+        },
+      },
+    }));
+
+    const result = await Batch.bulkWrite(bulkOps);
+
+    return res.status(200).json({
+      message: "Selected batches updated successfully",
+      modifiedCount: result.modifiedCount,
+      matchedCount: result.matchedCount,
+    });
+
+  } catch (error) {
+    console.error("Bulk update error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 export const deleteBatch = async (req, res) => {
   try {
     const deletedBatch = await Batch.findByIdAndDelete(req.params.batchId);

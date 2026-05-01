@@ -9,6 +9,13 @@ const memberSchema = new mongoose.Schema(
       trim: true,
     },
 
+    memberType: {
+      type: String,
+      required: true,
+      enum: ["Member", "Customer", "Guest"],
+      default: "Guest",
+    },
+
     title: {
       type: String,
       enum: ["Mr.", "Mrs.", "Miss.", "Dr.", "Prof."],
