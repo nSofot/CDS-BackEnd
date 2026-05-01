@@ -46,3 +46,35 @@ export const getStockIssueDetailByIssueReferenceId = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+export const updateStockIssueDetailsByBatchNumber = async (req, res) => {
+  try {
+    const { batchNumber } = req.params;
+    const { items } = req.body;
+
+    if (!items || !Array.isArray(items)) {
+      return res.status(400).json({
+        message: "Invalid items payload",
+      });
+    }
+
+    const result = await StockIssueDetail.updateMany(
+      { issueReferenceId: batchNumber },
+      {
+        $push: {
+          items: { $each: items }, // ✅ append new items
+        },
+      }
+    );
+
+    return res.json({
+      success: true,
+      modifiedCount: result.modifiedCount,
+      message: "Items appended successfully",
+    });
+
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
