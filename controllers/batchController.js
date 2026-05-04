@@ -84,27 +84,53 @@ export const updateBulkBatch = async (req, res) => {
       return res.status(400).json({ message: "No batches provided" });
     }
 
-    const bulkOps = batches.map((batch) => ({
-      updateOne: {
-        filter: { batchNo: batch.batchNo },
-        update: {
-          $set: {
-            totalCostValue: batch.totalCostValue,
-            totalJobValue: batch.totalJobValue,
-            status: batch.status,
-            sterilizationDate: batch.sterilizationDate,
-          },
-          $push: {
-            materials: {
-              $each: batch.materials || [],
+    const bulkOps = batches.map((batch) => {
+      // ---------------- DYNAMIC DATE FIELD ----------------
+      let dateField = {};
+
+      switch (batch.status) {
+        case "Sterilized":
+          dateField.sterilizationDate = batch.sterilizationDate || new Date();
+          break;
+
+        case "Inoculated":
+          dateField.inoculationDate = batch.inoculationDate || new Date();
+          break;
+
+        case "Incubating":
+          dateField.incubationDate = batch.incubationDate || new Date();
+          break;
+
+        case "Sold":
+          dateField.soldDate = batch.soldDate || new Date();
+          break;
+
+        default:
+          break;
+      }
+
+      return {
+        updateOne: {
+          filter: { batchNo: batch.batchNo },
+          update: {
+            $set: {
+              totalCostValue: batch.totalCostValue,
+              totalJobValue: batch.totalJobValue,
+              status: batch.status,
+              ...dateField, // ✅ dynamically applied
             },
-            otherExpenses: {
-              $each: batch.otherExpenses || [],
+            $push: {
+              materials: {
+                $each: batch.materials || [],
+              },
+              otherExpenses: {
+                $each: batch.otherExpenses || [],
+              },
             },
           },
         },
-      },
-    }));
+      };
+    });
 
     const result = await Batch.bulkWrite(bulkOps);
 
