@@ -15,7 +15,7 @@ import stockTransactionsRouter from "./Routes/stockTransactionsRoutes.js";
 import vendorTransactionsRouter from "./Routes/vendorTransactionsRoutes.js";
 
 import userRouter from "./Routes/userRouter.js";
-import bookReferencesRouter from "./Routes/bookReferencesRoutes.js";
+// import bookReferencesRouter from "./Routes/bookReferencesRoutes.js";
 import ledgerTransactionsRouter from "./Routes/ledgerTransactionsRoutes.js";
 import ledgerAccountRouter from "./Routes/ledgerAccountRoutes.js";
 
@@ -70,7 +70,7 @@ app.use("/api/member-transaction", memberTransactionsRouter);
 app.use("/api/stock-transaction", stockTransactionsRouter);
 app.use("/api/vendor-transaction", vendorTransactionsRouter);
 app.use("/api/user", userRouter);
-app.use("/api/book-reference", bookReferencesRouter);
+// app.use("/api/book-reference", bookReferencesRouter);
 app.use("/api/ledger-transaction", ledgerTransactionsRouter);
 app.use("/api/ledger-account", ledgerAccountRouter);
 app.use("/api/batch", batchRouter);
