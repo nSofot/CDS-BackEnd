@@ -19,7 +19,8 @@ const stockSchema = new mongoose.Schema(
             "sterilizing material", 
             "inoculating material",
             "incubating material", 
-            "finished products"
+            "finished products",
+            "harvested products"
         ],
     },
 
@@ -43,7 +44,7 @@ const stockSchema = new mongoose.Schema(
         type: String,
         required: true,
         trim: true,
-        enum: ["kg", "g", "L", "ml", "pcs"],
+        enum: ["kg", "g", "L", "ml", "m", "cm", "pcs", "pack", "pkt", "btl", "box", "set", "bag"],
     },
 
     stockCost: {
@@ -59,6 +60,13 @@ const stockSchema = new mongoose.Schema(
     baseQuantity: {
         type: Number,
     },
+
+    stockImage: [
+    {
+        type: String,
+        trim: true,
+    },
+    ],
   },
 );
 
