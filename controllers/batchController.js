@@ -76,6 +76,7 @@ export const updateBatch = async (req, res) => {
   }
 };
 
+
 export const updateBulkBatch = async (req, res) => {
   try {
     const { batches } = req.body;
@@ -99,10 +100,6 @@ export const updateBulkBatch = async (req, res) => {
 
         case "Incubating":
           dateField.incubationDate = batch.incubationDate || new Date();
-          break;
-
-        case "Sold":
-          dateField.soldDate = batch.soldDate || new Date();
           break;
 
         default:
@@ -172,3 +169,24 @@ export const getBatchByNo = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export async function reduceBatchBagBalanceQuantity(req, res) {
+  try {
+    const { batchNo, bags } = req.body;
+
+    const updatedBatch = await Batch.findOneAndUpdate(
+      { batchNo },
+      { $inc: { balanceBags: -Number(bags) } },
+      { new: true }
+    );
+
+    if (!updatedBatch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    res.status(200).json(updatedBatch);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
