@@ -21,6 +21,7 @@ export const createStockTransaction = async (req, res) => {
 
     const prefixMap = {
       Purchase: "GRN-",
+      bagSales: "BAG-",
       SalesInvoice: "INV-",
       GoodIssue: "GIN-",
       Return: "RTN-",
@@ -31,7 +32,6 @@ export const createStockTransaction = async (req, res) => {
       Fruiting: "FRU-",
       Completed: "COM-",
       Rejected: "REJ-",
-      Sold: "SAL-",
       TRX: "TRX-",
     };
 

@@ -17,8 +17,28 @@ const batchSchema = new mongoose.Schema(
     numberOfBags: {
       type: Number,
       required: true,
-      min: 1,
+      default: 0,
     },
+
+    balanceBags: {
+      type: Number,
+      default: 0,
+    },
+
+    sterilizationDate: {
+      type: Date,
+      default: null,
+    },
+
+    inoculationDate: {
+      type: Date,
+      default: null,
+    },
+
+    incubationDate: {
+      type: Number,
+      default: 0,
+    }, 
 
     status: {
       type: String,
@@ -33,22 +53,6 @@ const batchSchema = new mongoose.Schema(
         "Sold",
       ],
       default: "Substrate",
-    },
-
-    sterilizationDate: {
-      type: Date,
-    },
-
-    inoculationDate: {
-      type: Date,
-    },
-
-    incubationDate: {
-      type: Date,
-    },
-
-    soldDate: {
-      type: Date,
     },
 
     materials: [

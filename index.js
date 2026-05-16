@@ -15,11 +15,11 @@ import stockTransactionsRouter from "./Routes/stockTransactionsRoutes.js";
 import vendorTransactionsRouter from "./Routes/vendorTransactionsRoutes.js";
 
 import userRouter from "./Routes/userRouter.js";
-// import bookReferencesRouter from "./Routes/bookReferencesRoutes.js";
 import ledgerTransactionsRouter from "./Routes/ledgerTransactionsRoutes.js";
 import ledgerAccountRouter from "./Routes/ledgerAccountRoutes.js";
 
 import batchRouter from "./Routes/batchRoutes.js";
+import batchTransactionsRouter from "./Routes/batchTransactionsRoutes.js";
 import stockIssueDetailRouter from "./Routes/stockIssueDetailRoutes.js";
 
 dotenv.config();
@@ -70,10 +70,10 @@ app.use("/api/member-transaction", memberTransactionsRouter);
 app.use("/api/stock-transaction", stockTransactionsRouter);
 app.use("/api/vendor-transaction", vendorTransactionsRouter);
 app.use("/api/user", userRouter);
-// app.use("/api/book-reference", bookReferencesRouter);
 app.use("/api/ledger-transaction", ledgerTransactionsRouter);
 app.use("/api/ledger-account", ledgerAccountRouter);
 app.use("/api/batch", batchRouter);
+app.use("/api/batch-transaction", batchTransactionsRouter);
 app.use("/api/stock-issue-details", stockIssueDetailRouter);
 
 // 5️⃣ Health Check

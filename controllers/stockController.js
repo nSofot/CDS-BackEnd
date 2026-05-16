@@ -35,6 +35,8 @@ export const createStock = async (req, res) => {
       startFrom = 4000; // 400
     } else if (stockCategory === "finished products") {
       startFrom = 5000; // 500
+    } else if (stockCategory === "harvested products") {
+      startFrom = 6000; // 600
     } else {
       return res.status(400).json({
         message: "Invalid stock category",
@@ -191,7 +193,7 @@ export const addBulkStock = async (req, res) => {
         const averageCost =
           currentQty + newQty > 0
             ? (
-                (currentCost * currentQty + newCost * newQty) /
+                ((currentCost * currentQty) + (newCost * newQty)) /
                 (currentQty + newQty)
               ).toFixed(2)
             : 0;
