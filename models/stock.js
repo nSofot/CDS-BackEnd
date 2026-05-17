@@ -74,5 +74,4 @@ const stockSchema = new mongoose.Schema(
   },
 );
 
-const Stock = mongoose.model("Stock", stockSchema);
-export default Stock;
+export default mongoose.model("Stock", stockSchema);
