@@ -1,6 +1,7 @@
 import Stock from "../models/stock.js";
 
 export const createStock = async (req, res) => {
+console.log(req.body);  
   try {
     const {
       stockCategory,
@@ -11,6 +12,8 @@ export const createStock = async (req, res) => {
       stockUOM,
       stockCost,
       stockPrice,
+      labelledPrice,
+      stockImage,
     } = req.body;
 
     // Validation
@@ -82,6 +85,8 @@ export const createStock = async (req, res) => {
       stockUOM,
       stockCost: Number(stockCost || 0),
       stockPrice: Number(stockPrice || 0),
+      labelledPrice: Number(labelledPrice || 0),
+      stockImage,
     });
 
     const savedStock = await stock.save();
@@ -108,15 +113,24 @@ export const getAllStocks = async (req, res) => {
 };
 
 export const getStockById = async (req, res) => {
-  const { id } = req.params;
+  const { stockId } = req.params;
+
   try {
-    const stock = await Stock.findById(id);
+    const stock = await Stock.findOne({
+      stockId: stockId,
+    });
+
     if (!stock) {
-      return res.status(404).json({ message: "Stock not found" });
+      return res.status(404).json({
+        message: "Stock not found",
+      });
     }
+
     res.json(stock);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message,
+    });
   }
 };
 
@@ -264,4 +278,37 @@ export async function reduceStockQuantity(req, res) {
       error: err.message,
     });
   }
+}
+
+
+export async function searchStocks(req, res) {
+	const searchQuery = req.query.query || "";
+
+	try {
+		const regex = {
+			$regex: searchQuery,
+			$options: "i",
+		};
+
+		const filter = {
+			...(searchQuery.trim() !== "" && {
+				$or: [
+					{ stockName: regex },
+					{ stockDescription: regex },
+				],
+			}),
+		};
+
+		const products = await Stock.find(filter);
+
+		res.status(200).json(products);
+
+	} catch (err) {
+		console.log(err);
+
+		res.status(500).json({
+			message: "Error searching products",
+			error: err.message,
+		});
+	}
 }

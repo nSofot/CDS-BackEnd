@@ -57,6 +57,10 @@ const stockSchema = new mongoose.Schema(
         required: true,
     },
 
+    labelledPrice: {
+        type: Number,
+    },
+
     baseQuantity: {
         type: Number,
     },
