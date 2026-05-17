@@ -1,7 +1,6 @@
 import Stock from "../models/stock.js";
 
-export const createStock = async (req, res) => {
-console.log(req.body);  
+export const createStock = async (req, res) => {  
   try {
     const {
       stockCategory,
