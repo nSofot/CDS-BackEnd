@@ -1,4 +1,4 @@
-import BagOrder from "../models/BagOrder.js";
+import BagOrder from "../models/bagOrder.js";
 
 export const createBagOrder = async (req, res) => {
     try {
