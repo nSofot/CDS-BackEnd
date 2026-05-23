@@ -173,20 +173,40 @@ export const getBatchByNo = async (req, res) => {
 
 export async function reduceBatchBagBalanceQuantity(req, res) {
   try {
-    const { batchNo, bags } = req.body;
+    const { items } = req.body;
 
-    const updatedBatch = await Batch.findOneAndUpdate(
-      { batchNo },
-      { $inc: { balanceBags: -Number(bags) } },
-      { new: true }
-    );
-
-    if (!updatedBatch) {
-      return res.status(404).json({ message: "Batch not found" });
+    if (!Array.isArray(items)) {
+      return res.status(400).json({
+        error: "Items must be an array",
+      });
     }
 
-    res.status(200).json(updatedBatch);
+    for (const item of items) {
+      const bags = Number(item.bags);
+
+      if (isNaN(bags)) {
+        return res.status(400).json({
+          error: `Invalid bags value for batch ${item.batchNo}`,
+        });
+      }
+
+      await Batch.findOneAndUpdate(
+        { batchNo: item.batchNo },
+        {
+          $inc: {
+            balanceBags: -bags,
+          },
+        },
+        { new: true }
+      );
+    }
+
+    res.status(200).json({
+      message: "Batch balances updated successfully",
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+    });
   }
 }
