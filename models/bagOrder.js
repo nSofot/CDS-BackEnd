@@ -72,7 +72,7 @@ const bagOrderSchema = new mongoose.Schema(
         type: Date,
     },
 
-    batchId: {
+    batchNo: {
         type: String,
         trim: true,
     },
