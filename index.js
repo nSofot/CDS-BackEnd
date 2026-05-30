@@ -17,6 +17,7 @@ import vendorTransactionsRouter from "./Routes/vendorTransactionsRoutes.js";
 import userRouter from "./Routes/userRouter.js";
 import ledgerTransactionsRouter from "./Routes/ledgerTransactionsRoutes.js";
 import ledgerAccountRouter from "./Routes/ledgerAccountRoutes.js";
+import ledgerHeaderAccountRouter from "./Routes/ledgerHeaderAccountRoutes.js";
 
 import batchRouter from "./Routes/batchRoutes.js";
 import batchTransactionsRouter from "./Routes/batchTransactionsRoutes.js";
@@ -73,6 +74,7 @@ app.use("/api/vendor-transaction", vendorTransactionsRouter);
 app.use("/api/user", userRouter);
 app.use("/api/ledger-transaction", ledgerTransactionsRouter);
 app.use("/api/ledger-account", ledgerAccountRouter);
+app.use("/api/ledger-header-account", ledgerHeaderAccountRouter);
 app.use("/api/batch", batchRouter);
 app.use("/api/batch-transaction", batchTransactionsRouter);
 app.use("/api/stock-issue-details", stockIssueDetailRouter);

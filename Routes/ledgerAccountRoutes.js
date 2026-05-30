@@ -16,7 +16,7 @@ import {
 const ledgerAccountRouter = express.Router();
 
 
-ledgerAccountRouter.post("/:headerAccountId", createLedgerAccount);
+ledgerAccountRouter.post("/", createLedgerAccount);
 ledgerAccountRouter.get("/", getLedgerAccounts);
 ledgerAccountRouter.get("/:accountId", getLedgerAccountById);
 ledgerAccountRouter.put("/add-balance", addLederAccountBalance);

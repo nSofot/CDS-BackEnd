@@ -76,3 +76,19 @@ export const getMemberTransactions = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+export const getMemberTransactionByMemberId = async (req, res) => {
+  try {
+    const { memberId } = req.params;
+    const transactions = await MemberTransactions.find({ memberId }).sort({ trxDate: -1 });
+
+    res.json({
+      success: true,
+      data: transactions,
+    });
+  } catch (err) {
+    console.error("❌ Fetch error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};

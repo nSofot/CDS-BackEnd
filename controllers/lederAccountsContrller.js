@@ -1,82 +1,76 @@
 import { isAdmin } from "./userController.js";
 import LedgerAccounts from "../models/ledgerAccounts.js";
 
-/**
- * POST /ledger/:headerAccountId
- */
 export async function createLedgerAccount(req, res) {
-    const { headerAccountId } = req.params;
+  try {
+    // if (!(await isAdmin(req))) {
+    //   return res.status(403).json({
+    //     message: "You are not authorized to add ledger account",
+    //   });
+    // }
 
-    try {
-        // 1️⃣ Admin check
-        // if (!(await isAdmin(req))) {
-        //     return res.status(403).json({ message: "You are not authorized to add ledger account" });
-        // }
+    const { accountName, accountType, headerAccountId } = req.body;
 
-        // 2️⃣ Required field check
-        if (!req.body.accountName) {
-            return res.status(400).json({ message: "Account name is required" });
-        }
-
-        if (!req.body.accountType) {
-            return res.status(400).json({ message: "Account type is required" });
-        }
-
-        // 3️⃣ Optional: Validate headerAccountId exists (if not top-level)
-        // const idNum = parseInt(headerAccountId, 10);
-        // if (!isNaN(idNum) && idNum > 0 && idNum < 999) {
-        //     const headerExists = await LedgerAccounts.exists({ accountId: headerAccountId });
-        //     if (!headerExists) {
-        //         return res.status(400).json({ message: "Invalid header account ID" });
-        //     }
-        // }
-        
-
-        // 4️⃣ Find last account under this header
-        const last = await LedgerAccounts
-            .findOne({ accountId: new RegExp(`^${headerAccountId}-\\d{4}$`) })
-            .sort({ accountId: -1 }) // highest suffix first
-            .lean();
-
-        let nextNumber = 1;
-        if (last) {
-            const [, suffix] = last.accountId.split("-");
-            nextNumber = Number(suffix) + 1;
-        }
-
-        const accountId = `${headerAccountId}-${String(nextNumber).padStart(4, "0")}`;
-
-        // 5️⃣ Auto-fill createdBy from user session (if available)
-        const createdBy = req.user?.username || "system";
-
-        // 6️⃣ Create account
-        const { accountName, accountType } = req.body;
-        const newAccount = new LedgerAccounts({
-            accountId,
-            accountType,
-            accountName,
-            headerAccountId,
-            createdBy,
-        });
-
-        await newAccount.save();
-
-        return res.status(201).json({
-            message: "Ledger account created successfully",
-            account: newAccount
-        });
-
-    } catch (err) {
-        if (err.code === 11000) {
-            return res.status(409).json({ message: "Duplicate account ID. Try again." });
-        }
-
-        console.error("Error creating ledger account:", err);
-        return res.status(500).json({
-            message: "Failed to create ledger account",
-            error: err.message
-        });
+    if (!accountName) {
+      return res.status(400).json({ message: "Account name is required" });
     }
+
+    if (!accountType) {
+      return res.status(400).json({ message: "Account type is required" });
+    }
+
+    if (!headerAccountId) {
+      return res.status(400).json({ message: "Header account is required" });
+    }
+
+    // 🔥 SAFE REGEX ESCAPE
+    const safeHeaderId = headerAccountId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    // 🔥 Get all accounts under header (more reliable than sorting string)
+    const lastAccount = await LedgerAccounts
+      .findOne({ accountId: new RegExp(`^${safeHeaderId}-`) })
+      .sort({ createdAt: -1 }) // safer than accountId sorting
+      .lean();
+
+    let nextNumber = 1;
+
+    if (lastAccount?.accountId) {
+      const parts = lastAccount.accountId.split("-");
+      const lastNumber = parseInt(parts[1] || "0", 10);
+      nextNumber = lastNumber + 1;
+    }
+
+    const accountId = `${headerAccountId}-${String(nextNumber).padStart(4, "0")}`;
+
+    const newAccount = new LedgerAccounts({
+      accountId,
+      accountType,
+      accountName,
+      headerAccountId,
+      accountBalance: 0,
+      createdBy: req.user?.username || "system",
+    });
+
+    await newAccount.save();
+
+    return res.status(201).json({
+      message: "Ledger account created successfully",
+      account: newAccount,
+    });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({
+        message: "Duplicate account ID. Try again.",
+      });
+    }
+
+    console.error("Error creating ledger account:", err);
+
+    return res.status(500).json({
+      message: "Failed to create ledger account",
+      error: err.message,
+    });
+  }
 }
 
 
