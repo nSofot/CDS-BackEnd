@@ -21,8 +21,8 @@ export const createStockTransaction = async (req, res) => {
 
     const prefixMap = {
       Purchase: "GRN-",
-      bagSales: "BAG-",
-      SalesInvoice: "INV-",
+      BagInvoice: "BAG-",
+      Invoice: "INV-",
       GoodIssue: "GIN-",
       Return: "RTN-",
       Substrate: "SUB-",
@@ -116,9 +116,9 @@ export async function getStockTransactions(req, res) {
 }
 
 export async function getStockTransactionById(req, res) {
-  const { id } = req.params;
+  const { trxId } = req.params;
   try {
-    const transaction = await StockTransactions.findById(id);
+    const transaction = await StockTransactions.findOne({trxId});
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
