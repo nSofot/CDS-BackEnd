@@ -23,7 +23,7 @@ const memberTransactionSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        enum: ["SalesInvoice", "Receipt", "Return"],
+        enum: ["BagInvoice", "Invoice", "Receipt", "Return"],
     },
 
     memberId: {

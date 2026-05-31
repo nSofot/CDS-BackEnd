@@ -11,7 +11,7 @@ const stockTransactionsRouter = express.Router();
 
 stockTransactionsRouter.post("/", createStockTransaction);
 stockTransactionsRouter.get("/", getStockTransactions);
-stockTransactionsRouter.get("/:transactionId", getStockTransactionById);
+stockTransactionsRouter.get("/:trxId", getStockTransactionById);
 stockTransactionsRouter.put("/updateQuantityBalance", updateQuantityBalance);
 
 export default stockTransactionsRouter;

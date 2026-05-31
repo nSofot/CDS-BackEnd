@@ -1,7 +1,6 @@
 import LedgerHeaderAccounts from "../models/ledgerHeaderAccounts.js";
 
-export const createLedgerHeaderAccount = async (req, res) => {
-console.log("Create Ledger Header Account Request Body:", req.body);  
+export const createLedgerHeaderAccount = async (req, res) => { 
   try {
     const accountType =
       req.body.accountType || "";
