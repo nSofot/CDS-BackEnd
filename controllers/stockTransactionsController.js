@@ -22,7 +22,7 @@ export const createStockTransaction = async (req, res) => {
     const prefixMap = {
       Purchase: "GRN-",
       BagInvoice: "BAG-",
-      Invoice: "INV-",
+      SalesInvoice: "INV-",
       GoodIssue: "GIN-",
       Return: "RTN-",
       Substrate: "SUB-",
