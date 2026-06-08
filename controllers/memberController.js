@@ -2,8 +2,7 @@ import bcrypt from "bcryptjs";
 import Member from "../models/member.js";
 import { isAdmin } from "./userController.js";
 
-// ======================== CREATE MEMBER =======================
-
+// ======================== CREATE MEMBER ======================
 export async function CreateMember(req, res) {
   let memberId = "";
   try {
@@ -33,6 +32,8 @@ export async function CreateMember(req, res) {
       message: "First name, last name, and mobile are required",
     });
   }
+
+
 
   // remove empty strings
   Object.keys(req.body).forEach(key => {
@@ -84,6 +85,8 @@ export async function getMembers(req, res) {
   }
 }
 
+
+
 // ======================== GET MEMBER BY ID ========================
 export async function getMemberById(req, res) {
   const memberId = req.params.memberId;
@@ -96,6 +99,8 @@ export async function getMemberById(req, res) {
     res.status(500).json({ message: "Error getting member", error: err.message });
   }
 }
+
+
 
 // ======================== DELETE MEMBER (Soft Delete) ========================
 export async function deleteMember(req, res) {
@@ -112,6 +117,8 @@ export async function deleteMember(req, res) {
   }
 }
 
+
+
 // ======================== UPDATE MEMBER ========================
 export async function updateMember(req, res) {
   const memberId = req.params.memberId;
@@ -127,6 +134,8 @@ export async function updateMember(req, res) {
     res.status(500).json({ message: "Failed to update member", error: err.message });
   }
 }
+
+
 
 // ======================== SEARCH MEMBERS ========================
 export async function searchMembers(req, res) {
@@ -156,6 +165,8 @@ export async function searchMembers(req, res) {
   }
 }
 
+
+
 export async function addDueAmount(req, res) {
   const memberId = req.params.memberId;
   const { amount } = req.body;
@@ -171,6 +182,8 @@ export async function addDueAmount(req, res) {
     res.status(500).json({ message: "Error adding amount", error: err.message });
   }
 }
+
+
 
 export async function subtractDueAmount(req, res) {
   const memberId = req.params.memberId;

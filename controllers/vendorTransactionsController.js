@@ -98,7 +98,10 @@ export const createVendorTransaction = async (req, res) => {
 export const getVendorTransactions = async (req, res) => {
   try {
     const vendorTransactions = await VendorTransactions.find().sort({ trxDate: -1 });
-    res.json(vendorTransactions);
+    res.json({
+      success: true,
+      data: vendorTransactions,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
