@@ -24,6 +24,8 @@ import batchTransactionsRouter from "./Routes/batchTransactionsRoutes.js";
 import stockIssueDetailRouter from "./Routes/stockIssueDetailRoutes.js";
 import bagOrderRouter from "./Routes/bagOrderRoutes.js";
 
+import chequeBookInwardRoutes from "./Routes/chequeBookInwardRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -79,6 +81,8 @@ app.use("/api/batch", batchRouter);
 app.use("/api/batch-transaction", batchTransactionsRouter);
 app.use("/api/stock-issue-details", stockIssueDetailRouter);
 app.use("/api/bag-order", bagOrderRouter);
+app.use("/api/chequeBookInward", chequeBookInwardRoutes);
+
 
 // 5️⃣ Health Check
 app.get("/", (req, res) => {
