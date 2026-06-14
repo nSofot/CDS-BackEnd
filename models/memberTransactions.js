@@ -10,7 +10,6 @@ const memberTransactionSchema = new mongoose.Schema({
 
     referenceId: {
         type: String,
-        required: true,
         trim: true,
     },
 
@@ -23,7 +22,7 @@ const memberTransactionSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        enum: ["BagInvoice", "SalesInvoice", "Receipt", "Return"],
+        enum: ["BagInvoice", "SalesInvoice", "MemberReceipt", "Return"],
     },
 
     memberId: {

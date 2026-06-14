@@ -20,8 +20,8 @@ export const createMemberTransaction = async (req, res) => {
 
     let trxId = "";
 
-    if (trxType === "Receipt") {
-      const prefix = "REC-";
+    if (trxType === "MemberReceipt") {
+      const prefix = "MBR-";
 
       const lastTransaction = await MemberTransactions.findOne({ trxType })
         .sort({ createdAt: -1 });
@@ -87,6 +87,66 @@ export const getMemberTransactionByMemberId = async (req, res) => {
       success: true,
       data: transactions,
     });
+  } catch (err) {
+    console.error("❌ Fetch error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+export const getMemberOutstandingTransactionByMemberId = async (req, res) => {
+  try {
+    const { memberId } = req.params;
+
+    const transactions = await MemberTransactions.find({
+      memberId: memberId,
+      dueAmount: { $gt: 0 },
+      trxType: { $in: ["BagInvoice", "SalesInvoice"] },
+    }).sort({ trxDate: -1 });
+
+    res.json({
+      success: true,
+      data: transactions,
+    });
+  } catch (err) {
+    console.error("❌ Fetch error:", err);
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+export const substractDueAmount = async (req, res) => {
+  try {
+    const { trxId } = req.params;
+    const { amount } = req.body;
+
+    const transaction = await MemberTransactions.findOne({ trxId });
+
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    const amt = Number(amount || 0);
+
+    if (amt <= 0) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    if (transaction.dueAmount < amt) {
+      return res.status(400).json({ message: "Amount exceeds due amount" });
+    }
+
+    transaction.dueAmount -= amt;
+    await transaction.save();
+
+    res.json({
+      message: "Amount subtracted successfully",
+      updatedDueAmount: transaction.dueAmount,
+    });
+
   } catch (err) {
     console.error("❌ Fetch error:", err);
     res.status(500).json({ message: err.message });

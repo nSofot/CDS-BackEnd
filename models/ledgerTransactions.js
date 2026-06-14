@@ -9,7 +9,6 @@ const ledgerTransactionsSchema = new mongoose.Schema({
     },
     referenceId: {
         type: String,
-        required: true,
         trim: true
     },
     trxDate: {
@@ -19,7 +18,7 @@ const ledgerTransactionsSchema = new mongoose.Schema({
     transactionType: {
         type: String,
         required: true,
-        enum: ['Receipt', 'Payment', 'Transfer'],
+        enum: ['MemberReceipt', 'OtherReceipt', 'SupplierPayment', 'OtherPayment', 'OtherInvoice', 'Transfer'],
     },
     accountId: {
         type: String,
@@ -34,6 +33,10 @@ const ledgerTransactionsSchema = new mongoose.Schema({
         required: true
     },
     trxAmount: {
+        type: Number,
+        default: 0
+    },
+    dueAmount: {
         type: Number,
         default: 0
     },
