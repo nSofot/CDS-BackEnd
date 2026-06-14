@@ -2,6 +2,74 @@ import { isAdmin } from "./userController.js";
 import LedgerTransactions from "../models/ledgerTransactions.js";
 
 
+
+export async function createLedgerTransaction(req, res) {
+    try {
+        const { trxDate, transactionType } = req.body;
+
+        const trxDateObj = new Date(trxDate);
+        if (isNaN(trxDateObj)) {
+            return res.status(400).json({ message: "Invalid transaction date" });
+        }
+
+        let trxId = req.body.trxId;
+
+        // Auto-generate transaction number
+        if (
+            transactionType === "OtherReceipt" ||
+            transactionType === "OtherPayment"
+        ) {
+            const prefix =
+                transactionType === "OtherReceipt"
+                    ? "OTR-"
+                    : "OPM-";
+
+            const lastTransaction = await LedgerTransactions.findOne({
+                transactionType,
+                trxId: { $regex: `^${prefix}` },
+            })
+                .sort({ createdAt: -1 })
+                .lean();
+
+            let nextNumber = 1;
+
+            if (lastTransaction?.trxId) {
+                const lastNumber = parseInt(
+                    lastTransaction.trxId.replace(prefix, ""),
+                    10
+                );
+
+                if (!isNaN(lastNumber)) {
+                    nextNumber = lastNumber + 1;
+                }
+            }
+
+            trxId = `${prefix}${String(nextNumber).padStart(6, "0")}`;
+        }
+
+        const accountTransaction = new LedgerTransactions({
+            ...req.body,
+            trxId,
+            trxDate: trxDateObj,
+        });
+
+        await accountTransaction.save();
+
+        res.status(201).json({
+            message: "Account transaction created",
+            transaction: accountTransaction,
+        });
+    } catch (err) {
+        console.error("Error creating account transaction:", err);
+
+        res.status(500).json({
+            message: "Failed to create account transaction",
+            error: err.message,
+        });
+    }
+}
+
+
 export async function getLedgerTransactions(req, res) {
     // if (!isAdmin(req)) return res.status(403).json({ message: "Unauthorized access" });
 
@@ -30,31 +98,21 @@ export async function getLedgerTransactionById(req, res) {
 }
 
 
-export async function createLedgerTransaction(req, res) {             
+
+export async function getDueLedgerTransactionsByAccountId(req, res) {
     try {
-        const { trxDate } = req.body;
-        const trxDateObj = new Date(trxDate);
-        if (isNaN(trxDateObj)) {
-            return res.status(400).json({ message: "Invalid transaction date" });
+        const { accountId } = req.params;
+        const accountTransaction = await LedgerTransactions.find({
+            accountId: accountId,
+            dueAmount: { $gt: 0 },
+            transactionType: { $in: ["OtherInvoice"] },
+            }).sort({ trxDate: -1 });        
+        if (!accountTransaction) {
+            return res.status(404).json({ message: "Account transaction not found" });
         }
-
-        const accountTransaction = new LedgerTransactions({
-            ...req.body,
-            trxDate: trxDateObj,
-        });
-
-        await accountTransaction.save();
-
-        res.status(201).json({
-            message: "Account transaction created",
-            transaction: accountTransaction,
-        });
+        res.json(accountTransaction);
     } catch (err) {
-        console.error("Error creating account transaction:", err);
-        res.status(500).json({
-            message: "Failed to create account transaction",
-            error: err.message,
-        });
+        res.status(500).json({ message: "Failed to fetch account transaction", error: err.message });
     }
 }
 

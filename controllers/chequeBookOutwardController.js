@@ -1,11 +1,11 @@
 import { isAdmin } from "./userController.js";
-import ChequeBookInward from "../models/chequeBookInward.js";
+import ChequeBookOutward from "../models/chequeBookOutward.js";
 
-export async function addInwardCheque(req, res) {
+export async function addOutwardCheque(req, res) {
     // if (!isAdmin(req)) return res.status(403).json({ message: "Unauthorized access" });
 
     try {
-        const newCheque = new ChequeBookInward(req.body);
+        const newCheque = new ChequeBookOutward(req.body);
         await newCheque.save();
         res.status(201).json({ message: "New cheque added successfully" });
     } catch (err) {
@@ -13,25 +13,25 @@ export async function addInwardCheque(req, res) {
     }
 }
 
-export async function getAllInwardCheques(req, res) {
+export async function getAllOutwardCheques(req, res) {
     // if (!isAdmin(req)) return res.status(403).json({ message: "Unauthorized access" });
 
     try {
-        const cheques = await ChequeBookInward.find();
+        const cheques = await ChequeBookOutward.find();
         res.json(cheques);
     } catch (err) {
         res.status(500).json({ message: "Failed to fetch cheques", error: err.message });
     }
 }
 
-export async function getInwardChequeByChequeNo(req, res) {
+export async function getOutwardChequeByChequeNo(req, res) {
     // if (!isAdmin(req)) {
     //     return res.status(403).json({ message: "Unauthorized access" });
     // }
 
     try {
         const { chequeNumber } = req.params;
-        const cheque = await ChequeBookInward.findOne({ chequeNumber: chequeNumber.trim() });
+        const cheque = await ChequeBookOutward.findOne({ chequeNumber: chequeNumber.trim() });
         res.json(cheque);
     } catch (err) {
         res.status(500).json({ message: "Failed to fetch cheque", error: err.message });
@@ -50,7 +50,7 @@ export async function getChequesByStatus(req, res) {
             return res.status(400).json({ message: "Cheque status is required" });
         }
 
-        const cheques = await ChequeBookInward.find({ chequeStatus: status.trim() });
+        const cheques = await ChequeBookOutward.find({ chequeStatus: status.trim() });
 
         res.status(200).json(cheques);
     } catch (err) {
@@ -60,12 +60,12 @@ export async function getChequesByStatus(req, res) {
 }
 
 
-export async function updateInwardChequeStatus(req, res) {
+export async function updateOutwardChequeStatus(req, res) {
     // if (!isAdmin(req)) return res.status(403).json({ message: "Unauthorized access" });
 
     try {
         const { chequeNumber } = req.params;
-        const updated = await ChequeBookInward.findOneAndUpdate(
+        const updated = await ChequeBookOutward.findOneAndUpdate(
             { chequeNumber },
             req.body,
             { new: true }

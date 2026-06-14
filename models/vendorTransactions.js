@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const vendorTransactionSchema = new mongoose.Schema(
+const vendorTransactionsSchema = new mongoose.Schema(
   {
     trxId: {
       type: String,
@@ -22,7 +22,7 @@ const vendorTransactionSchema = new mongoose.Schema(
     trxType: {
         type: String,
         required: true,
-        enum: ["Purchase", "Invoice", "Payment", "Return"],
+        enum: ["Purchase", "Invoice", "SupplierPayment", "Return"],
     },
 
     vendorId: {
@@ -59,5 +59,5 @@ const vendorTransactionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const VendorTransaction = mongoose.model("VendorTransaction", vendorTransactionSchema);
-export default VendorTransaction;
+const VendorTransactions = mongoose.model("VendorTransactions", vendorTransactionsSchema);
+export default VendorTransactions;
