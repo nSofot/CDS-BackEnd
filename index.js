@@ -25,6 +25,8 @@ import stockIssueDetailRouter from "./Routes/stockIssueDetailRoutes.js";
 import bagOrderRouter from "./Routes/bagOrderRoutes.js";
 
 import chequeBookInwardRoutes from "./Routes/chequeBookInwardRoutes.js";
+import chequeBookOutwardRoutes from "./Routes/chequeBookOutwardRoutes.js";
+import cardPaymentRouter from "./Routes/cardPaymentsRoutes.js";
 
 dotenv.config();
 
@@ -82,6 +84,9 @@ app.use("/api/batch-transaction", batchTransactionsRouter);
 app.use("/api/stock-issue-details", stockIssueDetailRouter);
 app.use("/api/bag-order", bagOrderRouter);
 app.use("/api/chequeBookInward", chequeBookInwardRoutes);
+app.use("/api/chequeBookOutward", chequeBookOutwardRoutes);
+app.use("/api/card-payments", cardPaymentRouter);
+
 
 
 // 5️⃣ Health Check
