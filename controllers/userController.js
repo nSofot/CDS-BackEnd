@@ -81,6 +81,8 @@ export async function loginUsers(req, res) {
       message: "Login successful",
       token,
       memberId: member.memberId,
+      firstName: member.firstName,
+      lastName: member.lastName,      
       memberRole: member.memberRole,
     });
   } catch (err) {
