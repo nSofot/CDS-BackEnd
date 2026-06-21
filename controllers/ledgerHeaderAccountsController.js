@@ -13,10 +13,12 @@ export const createLedgerHeaderAccount = async (req, res) => {
 
     const typeBaseMap = {
       Income: 101,
-      Expense: 201,
-      Asset: 301,
-      Liability: 401,
-      Equity: 501,
+      Expenses: 201,
+      CurrentAssets: 301,
+      FixedAssets: 401,
+      CurrentLiabilities: 501,
+      NonCurrentLiabilities: 601,
+      EquityCapital: 701,
     };
 
     const baseNumber = typeBaseMap[accountType];
