@@ -13,7 +13,14 @@ const ledgerHeaderAccountsSchema = new mongoose.Schema(
         accountType: {
             type: String,
             required: true,
-            enum: ["Asset", "Liability", "Equity", "Income", "Expense"],
+            enum: [ "Income", 
+                    "Expenses", 
+                    "CurrentAssets", 
+                    "FixedAssets", 
+                    "CurrentLiabilities",
+                    "NonCurrentLiabilities",
+                    "EquityCapital"
+                ],
         },
 
         /* Human-readable name */

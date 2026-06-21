@@ -47,7 +47,7 @@ const stockIssueDetailSchema = new mongoose.Schema(
                 
                 receivedVendorId: {
                     type: String,
-                    required: true,
+                    default: "",
                     trim: true,
                 },
                 

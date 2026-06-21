@@ -3,44 +3,43 @@ import LedgerAccounts from "../models/ledgerAccounts.js";
 
 export async function createLedgerAccount(req, res) {
   try {
-    // if (!(await isAdmin(req))) {
-    //   return res.status(403).json({
-    //     message: "You are not authorized to add ledger account",
-    //   });
-    // }
-
     const { accountName, accountType, headerAccountId } = req.body;
 
-    if (!accountName) {
-      return res.status(400).json({ message: "Account name is required" });
+    if (!accountName || !accountType || !headerAccountId) {
+      return res.status(400).json({
+        message: "Missing required fields",
+      });
     }
 
-    if (!accountType) {
-      return res.status(400).json({ message: "Account type is required" });
+    // STEP 1: get all accounts under header
+    const accounts = await LedgerAccounts.find({
+      accountId: { $regex: `^${headerAccountId}-` }
+    }).lean();
+
+    // STEP 2: find max number safely
+    let max = 0;
+
+    for (const acc of accounts) {
+      const parts = acc.accountId.split("-");
+      const num = parseInt(parts[1] || "0", 10);
+
+      if (!isNaN(num) && num > max) {
+        max = num;
+      }
     }
 
-    if (!headerAccountId) {
-      return res.status(400).json({ message: "Header account is required" });
+    const nextNumber = max + 1;
+
+    const accountId = `${headerAccountId}-${String(nextNumber).padStart(3, "0")}`;
+
+    // STEP 3: double safety check (VERY IMPORTANT)
+    const exists = await LedgerAccounts.findOne({ accountId });
+
+    if (exists) {
+      return res.status(409).json({
+        message: "Account already exists. Retry again.",
+      });
     }
-
-    // 🔥 SAFE REGEX ESCAPE
-    const safeHeaderId = headerAccountId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-    // 🔥 Get all accounts under header (more reliable than sorting string)
-    const lastAccount = await LedgerAccounts
-      .findOne({ accountId: new RegExp(`^${safeHeaderId}-`) })
-      .sort({ createdAt: -1 }) // safer than accountId sorting
-      .lean();
-
-    let nextNumber = 1;
-
-    if (lastAccount?.accountId) {
-      const parts = lastAccount.accountId.split("-");
-      const lastNumber = parseInt(parts[1] || "0", 10);
-      nextNumber = lastNumber + 1;
-    }
-
-    const accountId = `${headerAccountId}-${String(nextNumber).padStart(4, "0")}`;
 
     const newAccount = new LedgerAccounts({
       accountId,
@@ -57,13 +56,8 @@ export async function createLedgerAccount(req, res) {
       message: "Ledger account created successfully",
       account: newAccount,
     });
-  } catch (err) {
-    if (err.code === 11000) {
-      return res.status(409).json({
-        message: "Duplicate account ID. Try again.",
-      });
-    }
 
+  } catch (err) {
     console.error("Error creating ledger account:", err);
 
     return res.status(500).json({
@@ -156,8 +150,6 @@ export async function addLederAccountBalance(req, res) {
 
 export async function subtractLedgerAccountBalance(req, res) {
   const { updates } = req.body;
-
-  console.log("Subtracting balances:", updates);
 
   // ================= VALIDATION =================
   if (!updates || !Array.isArray(updates)) {
