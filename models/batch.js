@@ -100,11 +100,11 @@ const batchSchema = new mongoose.Schema(
 
     otherExpenses: [
       {
-        expenseId: {
+        accountId: {
           type: String,
         },
 
-        name: {
+        accountName: {
           type: String,
         },
 
