@@ -152,3 +152,16 @@ export const substractDueAmount = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const getMemberReceiptTransactions = async (req, res) => {
+  try {
+    const transactions = await MemberTransactions.find({ trxType: "MemberReceipt" }).sort({ trxDate: -1 });
+    res.json({
+      success: true,
+      data: transactions,
+    });
+  } catch (err) {
+    console.error("❌ Fetch error:", err);
+    res.status(500).json({ message: err.message });
+  }
+}
