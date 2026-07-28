@@ -20,7 +20,8 @@ const stockSchema = new mongoose.Schema(
             "inoculating material",
             "incubating material", 
             "finished products",
-            "harvested products"
+            "harvested products",
+            "other products"
         ],
     },
 
