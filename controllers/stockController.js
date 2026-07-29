@@ -39,6 +39,8 @@ export const createStock = async (req, res) => {
       startFrom = 5000; // 500
     } else if (stockCategory === "harvested products") {
       startFrom = 6000; // 600
+    } else if (stockCategory === "other products") {
+      startFrom = 7000; // 700
     } else {
       return res.status(400).json({
         message: "Invalid stock category",
