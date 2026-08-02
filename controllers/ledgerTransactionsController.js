@@ -5,7 +5,11 @@ import LedgerTransactions from "../models/ledgerTransactions.js";
 
 export async function createLedgerTransaction(req, res) {
     try {
-        const { trxDate, transactionType } = req.body;
+        const {
+            trxDate,
+            transactionType,
+            isCredit
+        } = req.body;        
 
         const trxDateObj = new Date(trxDate);
         if (isNaN(trxDateObj)) {
@@ -17,12 +21,17 @@ export async function createLedgerTransaction(req, res) {
         // Auto-generate transaction number
         if (
             transactionType === "OtherReceipt" ||
-            transactionType === "OtherPayment"
+            (transactionType === "OtherPayment" && isCredit === false) ||
+            (transactionType === "OtherInvoice" && isCredit === false)
         ) {
             const prefix =
                 transactionType === "OtherReceipt"
                     ? "OTR-"
-                    : "OPM-";
+                    : transactionType === "OtherPayment"
+                    ? "OPM-"
+                    : transactionType === "OtherInvoice"
+                    ? "OTI-"
+                    : "";
 
             const lastTransaction = await LedgerTransactions.findOne({
                 transactionType,
@@ -150,3 +159,65 @@ export async function deleteLedgerTransaction(req, res) {
         res.status(500).json({ message: "Failed to delete account transaction", error: err.message });
     }
 }
+
+
+export const substractLedgerTrxDueAmount = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const { amount } = req.body;
+
+    console.log(
+      "Subtracting due amount for transactionId:",
+      transactionId,
+      "with amount:",
+      amount
+    );
+
+    const transaction = await LedgerTransactions.findOne({
+      trxId: transactionId, dueAmount: { $gt: 0 }
+    });
+
+    if (!transaction) {
+      return res.status(404).json({
+        message: "Transaction not found"
+      });
+    }
+
+    const amt = Number(amount || 0);   // <-- must come before using amt
+
+    console.log("Transaction found:", transaction.trxId);
+    console.log("Database due amount:", transaction.dueAmount);
+    console.log("Requested subtract amount:", amt);
+
+
+    if (amt <= 0) {
+      return res.status(400).json({
+        message: "Invalid amount"
+      });
+    }
+
+    if (transaction.dueAmount < amt) {
+      return res.status(400).json({
+        message: "Amount exceeds due amount",
+        currentDue: transaction.dueAmount,
+        requestedAmount: amt
+      });
+    }
+
+    transaction.dueAmount -= amt;
+
+    await transaction.save();
+
+    res.json({
+      message: "Amount subtracted successfully",
+      updatedDueAmount: transaction.dueAmount
+    });
+
+  } catch (err) {
+    console.error("❌ Subtract due error:", err);
+
+    res.status(500).json({
+      message: err.message
+    });
+  }
+};

@@ -6,7 +6,8 @@ import {
     deleteLedgerTransaction,
     getLedgerTransactionById,
     getLedgerTransactions,
-    getDueLedgerTransactionsByAccountId
+    getDueLedgerTransactionsByAccountId,
+    substractLedgerTrxDueAmount
 } from "../controllers/ledgerTransactionsController.js";
 
 const ledgerTransactionsRouter = express.Router();
@@ -17,6 +18,7 @@ ledgerTransactionsRouter.post("/", createLedgerTransaction);
 ledgerTransactionsRouter.put("/:transactionId", updateLedgerTransaction);
 ledgerTransactionsRouter.delete("/:transactionId", deleteLedgerTransaction);
 ledgerTransactionsRouter.get("/due/:accountId", getDueLedgerTransactionsByAccountId);
+ledgerTransactionsRouter.put("/subtract/:transactionId", substractLedgerTrxDueAmount);
 
 
 export default ledgerTransactionsRouter;
